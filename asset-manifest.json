@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/jacksonvanv/practicelogger/static/css/main.fada858e.css",
+    "main.js": "/jacksonvanv/practicelogger/static/js/main.80322a74.js",
+    "static/js/453.3c8d604f.chunk.js": "/jacksonvanv/practicelogger/static/js/453.3c8d604f.chunk.js",
+    "index.html": "/jacksonvanv/practicelogger/index.html",
+    "main.fada858e.css.map": "/jacksonvanv/practicelogger/static/css/main.fada858e.css.map",
+    "main.80322a74.js.map": "/jacksonvanv/practicelogger/static/js/main.80322a74.js.map",
+    "453.3c8d604f.chunk.js.map": "/jacksonvanv/practicelogger/static/js/453.3c8d604f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.fada858e.css",
+    "static/js/main.80322a74.js"
+  ]
+}
