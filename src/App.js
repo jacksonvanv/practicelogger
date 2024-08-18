@@ -18,6 +18,7 @@ function App() {
   });
 
   const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
 
@@ -44,43 +45,49 @@ function App() {
         .then(stream => {
           streamRef.current = stream;
           const video = videoRef.current;
-          video.srcObject = stream;
-          video.play();
 
           const mimeTypes = ['video/webm', 'video/mp4', 'video/ogg'];
           const validMimeType = mimeTypes.find(type => MediaRecorder.isTypeSupported(type)) || 'video/webm';
 
-          try {
-            const recorder = new MediaRecorder(stream, { mimeType: validMimeType });
-            mediaRecorderRef.current = recorder;
-            recorder.start();
+          const recorder = new MediaRecorder(stream, { mimeType: validMimeType });
+          mediaRecorderRef.current = recorder;
+          recorder.start();
 
-            let chunks = [];
-            recorder.ondataavailable = (event) => {
-              chunks.push(event.data);
-            };
+          let chunks = [];
+          recorder.ondataavailable = (event) => {
+            chunks.push(event.data);
+          };
 
-            recorder.onstop = () => {
-              const blob = new Blob(chunks, { type: validMimeType });
-              const url = URL.createObjectURL(blob);
-              setCurrentSession(prev => ({
-                ...prev,
-                videoBlob: blob,
-                videoURL: url,
-                showPlayback: true,
-              }));
-              // Stop the stream after recording
-              if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
-                streamRef.current = null;
-              }
-            };
+          recorder.onstop = () => {
+            const blob = new Blob(chunks, { type: validMimeType });
+            const url = URL.createObjectURL(blob);
+            setCurrentSession(prev => ({
+              ...prev,
+              videoBlob: blob,
+              videoURL: url,
+              showPlayback: true,
+            }));
+            // Stop the stream after recording
+            if (streamRef.current) {
+              streamRef.current.getTracks().forEach(track => track.stop());
+              streamRef.current = null;
+            }
+          };
 
-            setCurrentSession(prev => ({ ...prev, startTime: new Date() }));
-          } catch (error) {
-            console.error('Error initializing MediaRecorder:', error);
-            alert('Failed to initialize video recorder. Please try a different browser.');
+          // Start drawing frames on the canvas
+          function drawVideoFrame() {
+            if (videoRef.current) {
+              const context = canvasRef.current.getContext('2d');
+              context.drawImage(video, 0, 0, canvasRef.current.width, canvasRef.current.height);
+              requestAnimationFrame(drawVideoFrame);
+            }
           }
+
+          video.srcObject = stream;
+          video.play();
+          setTimeout(() => requestAnimationFrame(drawVideoFrame), 1000);
+
+          setCurrentSession(prev => ({ ...prev, startTime: new Date() }));
         })
         .catch(error => {
           console.error('Error accessing media devices:', error);
@@ -99,7 +106,6 @@ function App() {
 
   const handleAddVideo = () => {
     setCurrentSession(prev => ({ ...prev, recording: !prev.recording }));
-    console.log('Recording:', !currentSession.recording);
   };
 
   const handleSaveSession = () => {
@@ -206,11 +212,11 @@ function App() {
                   </button>
                 </div>
                 <div className="input-group">
-                  <video
-                    ref={videoRef}
-                    style={{ width: '100%', height: 'auto', display: currentSession.recording ? 'block' : 'none' }}
-                    autoPlay
-                    muted
+                  <canvas
+                    ref={canvasRef}
+                    width="640"
+                    height="480"
+                    style={{ display: currentSession.recording ? 'block' : 'none' }}
                   />
                 </div>
                 {currentSession.showPlayback && (

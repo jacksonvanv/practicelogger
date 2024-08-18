@@ -1,10 +1,7 @@
 {
   "name": "music-practice-logger",
   "version": "0.1.0",
-
-  "homepage": "https://jacksonvanv.github.io/practicelogger/",
-
-  
+  "homepage": "https://jacksonvanv.github.io/practicelogger",
   "private": true,
   "dependencies": {
     "@google-cloud/storage": "^7.12.1",
@@ -45,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^6.1.1"
+    "gh-pages": "^6.1.1",
+    "serve": "^14.2.3"
   }
 }
